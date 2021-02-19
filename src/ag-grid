@@ -1,0 +1,119 @@
+import logo from './logo.svg';
+import './App.css';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import React from 'react';
+import Component from 'react';
+import ReactDOM from 'react-dom';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import { AgGridReact} from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import EditCellRenderer from './EditCellRenderer.jsx';
+import DeleteCellRenderer from './DeleteCellRenderer.jsx';
+import { useRef } from 'react';
+
+
+function App() {
+  const [cars, setCars] =  useState([]);
+  const [links, setLinks] = useState();
+  const [newCar, setNewCar] = useState({brand: '', model: '', color: '', fuel: '', price: '', year: ''});
+
+  const gridRef= useRef();
+
+  const gridOptions = {
+
+    columnDefs:  [
+    { headerName: "ID", field: "id", sortable:true  , filter:true},
+    { headerName: "Brand", field: "brand", sortable:true  , filter:true},
+    { headerName: "Model", field: "model", sortable:true  , filter:true},
+    { headerName: "Color", field: "color", sortable:true  , filter:true},
+    { headerName: "Fuel", field: "fuel", sortable:true  , filter:true},
+    { headerName: "Price", field: "price", sortable:true  , filter:true},
+    { headerName: "Year", field: "year", sortable:true  , filter:true},
+    {
+      headerName: "Edit",
+      field: 'edit',
+      cellRenderer: 'editCellRenderer',
+      cellRendererParams: {
+        clicked: function(field) {
+          alert(`${field} was clicked`);
+        },
+      },
+    },
+    {
+      headerName: "Delete",
+      field: 'delete',
+      cellRenderer: 'deleteCellRenderer',
+      cellRendererParams: {
+        clicked: function(field) {    
+          var selectedNodes = gridOptions.api.getSelectedNodes();     
+          console.log(selectedNodes);              
+          gridOptions.api.removeItems(selectedNodes);
+          gridOptions.api.refreshView();    
+       //   cars.splice(selected);
+          
+         console.log("selected")
+          
+        },
+      },
+    }], 
+  frameworkComponents: {
+    editCellRenderer: EditCellRenderer,
+    deleteCellRenderer: DeleteCellRenderer
+  }
+  }
+  
+
+  React.useEffect(() => {
+    fetch('http://carrestapi.herokuapp.com/cars')
+    .then(response => response.json()) 
+    .then(responseData => { 
+      console.log(responseData._embedded.cars)
+      setCars(responseData._embedded.cars)
+      setLinks(responseData._links)
+      
+      console.log(responseData._links)
+    })
+    .catch(err => console.error(err))
+  }, [])
+
+  const handleClick = (key) =>{
+    console.log(key)
+  }
+
+  const inputChanged = (event) =>{
+    setNewCar({...newCar, [event.target.name]: event.target.value});
+  }
+
+  const addTodo = (event) =>{
+    event.preventDefault();
+    setCars([...cars, newCar]);
+  }
+
+  
+  return (
+    <div>
+      <h1>Car Shop</h1>
+      <hr></hr>
+      <div className="addCar">
+        <h1> Add new car </h1>
+      <TextField name="brand" label="Brand" onChange={inputChanged} value={newCar.brand}/>
+      <TextField name="model" label="Model" onChange={inputChanged} value={newCar.model}/>
+      <TextField name="color" label="Color" onChange={inputChanged} value={newCar.color}/>
+      <TextField name="fuel" label="Fuel" onChange={inputChanged} value={newCar.fuel}/>
+      <TextField name="price" label="Price" onChange={inputChanged} value={newCar.price}/>
+      <TextField name="year" label="Year" onChange={inputChanged} value={newCar.year}/>
+      <Button onClick={addTodo} variant="contained" color="primary">Add</Button>
+      <hr></hr>
+      </div>
+      <div className="ag-theme-material" style={{height:'700px', width:'100%', margin:'auto'}}>
+      <AgGridReact  ref={gridRef} onGridReady={params=> gridRef.current= params.api} rowSelection="single" gridOptions={gridOptions} rowData={cars}></AgGridReact>
+      </div>
+
+          </div> 
+  );
+}
+
+export default App;

@@ -1,0 +1,27 @@
+<table>
+          <thead>
+              <tr>
+                  <th>Brand</th>
+                  <th>Model</th>
+                  <th>Color</th>
+                  <th>Fuel</th>
+                  <th>Price</th>
+                  <th>Year</th>
+                  <th></th>
+                  <th></th>
+              </tr>
+              </thead>
+          {cars.map(car =>  
+        <tbody>
+        <tr key={car.id}>
+          <td>{car.brand}</td>
+          <td>{car.model}</td>
+          <td>{car.color}</td>
+          <td>{car.fuel}</td>
+          <td>{car.price}</td>
+          <td>{car.year}</td>
+          <td><button onClick={() => handleClick(car.id)}>Delete</button></td>
+          <td><button onClick={() => handleClick(car.id)}>Edit</button></td>
+          </tr>
+          </tbody>)}
+          </table> 
