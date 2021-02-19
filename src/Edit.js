@@ -4,6 +4,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useState } from 'react';
+import { Redirect } from "react-router-dom";
 
 
 function Edit(props) {
@@ -24,6 +25,32 @@ function Edit(props) {
     const inputChanged = (event) =>{
      setCar({...car, [event.target.name]: event.target.value});
     }
+
+    const editCar = (event) =>{
+      event.preventDefault();
+      
+      console.log(JSON.stringify({ brand: car.brand }))
+  
+      const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          brand: car.brand,
+          model: car.model,
+          color: car.color,
+          fuel: car.fuel,
+          price: car.price,
+          year: car.year
+       
+         })
+    };
+    fetch('http://carrestapi.herokuapp.com/cars/' + props.location.carId, requestOptions)
+        .then(response => response.json())
+        .then((data => console.log(data)));
+
+        alert("Car edited")
+        props.history.push('/')
+    }
   
     return(
   <div>
@@ -38,7 +65,7 @@ function Edit(props) {
       <TextField name="fuel" label="Fuel" onChange={inputChanged} value={car.fuel} />
       <TextField name="price" label="Price" onChange={inputChanged} value={car.price} />
       <TextField name="year" label="Year" onChange={inputChanged} value={car.year} />
-      <Button  variant="contained" color="primary">Edit</Button>
+      <Button onClick={editCar}  variant="contained" color="primary">Edit</Button>
       <hr></hr>
       </div>
 
