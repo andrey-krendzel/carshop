@@ -10,7 +10,7 @@ import { BrowserRouter as Router,
 ReactDOM.render(
   <React.StrictMode>
       <Router>
-    <div><Link to="/">Home  </Link> {' '}
+    <div>
     
     
     <Switch>
@@ -18,7 +18,8 @@ ReactDOM.render(
     <Route path = "/edit/:carid" component={Edit}/>
    
     <Route render={() => <h1> Page not  found</h1>}/>
-    </Switch></div>
+    </Switch>
+    </div>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

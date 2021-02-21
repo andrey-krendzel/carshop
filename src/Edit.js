@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useState } from 'react';
 import { Redirect } from "react-router-dom";
+import { Link} from "react-router-dom";
 
 
 function Edit(props) {
@@ -57,7 +58,7 @@ function Edit(props) {
   <div>
     <h1>Edit car</h1>
   
-
+    <h2><Link to="/">Go back  </Link></h2>
     <div className="editCar">
        
       <TextField name="brand" label="Brand" onChange={inputChanged} value={car.brand} /><br /><br />

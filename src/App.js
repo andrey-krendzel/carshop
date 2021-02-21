@@ -15,16 +15,36 @@ import DeleteCellRenderer from './DeleteCellRenderer.jsx';
 import { useRef } from 'react';
 import {Link} from "react-router-dom";
 import { Minimize } from '@material-ui/icons';
+import {CSVLink, CSVDownload} from 'react-csv';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from'@material-ui/core/Tab';
+import AppBar from '@material-ui/core/AppBar';
 
 
+function AddCar(props){
 
-function App() {
+    return(<div className="addCar">
+    <h1> Add new car </h1>
+  <TextField name="brand" label="Brand" onChange={props.inputChanged} value={props.newCar.brand}/>
+  <TextField name="model" label="Model" onChange={props.inputChanged} value={props.newCar.model}/>
+  <TextField name="color" label="Color" onChange={props.inputChanged} value={props.newCar.color}/>
+  <TextField name="fuel" label="Fuel" onChange={props.inputChanged} value={props.newCar.fuel}/>
+  <TextField name="price" label="Price" onChange={props.inputChanged} value={props.newCar.price}/>
+  <TextField name="year" label="Year" onChange={props.inputChanged} value={props.newCar.year}/>
+  <Button onClick={props.addCar} variant="contained" color="primary">Add</Button>
+  <hr></hr>
+  </div>)
+}
+
+function App(props) {
   const [cars, setCars] =  useState([]);
+  const [update, setUpdate] = useState();
+  const[tabValue, setTabValue] = useState('one');
   const [links, setLinks] = useState();
   const [newCar, setNewCar] = useState({brand: '', model: '', color: '', fuel: '', price: 0, year: 0});
   const [sortedField, setSortedField] = React.useState();
   const [direction, setDirection ] = React.useState()
-  const [filter, setFilter] = React.useState({brand: '', model: '', color:'', fuel: '', price: {min: 0, max: 1000000}, year:0})
+  const [filter, setFilter] = React.useState({brand: '', model: '', color:'', fuel: '', price: {min: 0, max: 1000000}, year: ''})
   
 
   React.useEffect(() => {
@@ -33,12 +53,11 @@ function App() {
     .then(responseData => { 
       console.log(responseData._embedded.cars)
       setCars(responseData._embedded.cars)
-      setLinks(responseData._links)
       
       console.log(cars)
     })
     .catch(err => console.error(err))
-  }, [])
+  }, [update])
 
   const handleClick = (serverId, actualIndex) =>{
 
@@ -63,8 +82,7 @@ function App() {
 
   const addCar = (event) =>{
     event.preventDefault();
-    // setCars([...cars, newCar]);
-    console.log(JSON.stringify({ brand: newCar.brand }))
+
 
     const requestOptions = {
       method: 'POST',
@@ -81,7 +99,9 @@ function App() {
   };
   fetch('http://carrestapi.herokuapp.com/cars/', requestOptions)
       .then(response => response.json())
-      .then((data => console.log(data)));
+      .then((data => console.log(data)))
+      
+  setUpdate(1)
   }
 
   //Sort magic
@@ -148,22 +168,30 @@ function App() {
     setFilter({...filter, year: event.target.value})
   }
 
+  //Tabs
+
+  const handleTabChange = (event, tabValue) => {
+    setTabValue(tabValue);
+};
 
   
   return (
     <div>
       <h1>Car Shop</h1>
-      <hr></hr>
-      <div className="addCar">
-        <h1> Add new car </h1>
-      <TextField name="brand" label="Brand" onChange={inputChanged} value={newCar.brand}/>
-      <TextField name="model" label="Model" onChange={inputChanged} value={newCar.model}/>
-      <TextField name="color" label="Color" onChange={inputChanged} value={newCar.color}/>
-      <TextField name="fuel" label="Fuel" onChange={inputChanged} value={newCar.fuel}/>
-      <TextField name="price" label="Price" onChange={inputChanged} value={newCar.price}/>
-      <TextField name="year" label="Year" onChange={inputChanged} value={newCar.year}/>
-      <Button onClick={addCar} variant="contained" color="primary">Add</Button>
-      <hr></hr>
+      <div>
+        <AppBar position="static">
+        <Tabs value={tabValue} onChange={handleTabChange}>
+            <Tab value="one" label="Add Car"/>
+            <Tab value="two" label="My Todos"/>
+           
+            </Tabs>
+            </AppBar>
+            {tabValue==='one' && <AddCar inputChanged={inputChanged} addCar={addCar} newCar={newCar} />}
+            {tabValue==='two' && <div></div>}
+            
+            </div>
+
+
       <div className="filterCar">
       <h1> Filter car </h1>
       By brand: <input onChange={brandFilterChanged} value={filter.brand}></input> <br />
@@ -176,9 +204,15 @@ function App() {
       <hr></hr>
       <div className="exportCar">
       <h1> Export  </h1>
+      <CSVLink data={cars.filter(car => car.brand.toLowerCase().includes(filter.brand.toLowerCase()))
+         .filter(car => car.model.toLowerCase().includes(filter.model.toLowerCase()))
+         .filter(car => car.color.toLowerCase().includes(filter.color.toLowerCase()))
+         .filter(car => car.fuel.toLowerCase().includes(filter.fuel.toLowerCase()))
+         .filter(car => car.price > filter.price.min && car.price < filter.price.max)
+          .filter(car => car.year.toString().toLowerCase().includes(filter.year.toString().toLowerCase()))} >Download in .csv</CSVLink>
       </div>
       <hr></hr>
-      </div>
+     
   
    
       <table>

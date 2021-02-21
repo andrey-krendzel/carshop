@@ -25,3 +25,14 @@
           </tr>
           </tbody>)}
           </table> 
+
+          <!-- <div className="addCar">
+    <h1> Add new car </h1>
+  <TextField name="brand" label="Brand" onChange={inputChanged} value={newCar.brand}/>
+  <TextField name="model" label="Model" onChange={inputChanged} value={newCar.model}/>
+  <TextField name="color" label="Color" onChange={inputChanged} value={newCar.color}/>
+  <TextField name="fuel" label="Fuel" onChange={inputChanged} value={newCar.fuel}/>
+  <TextField name="price" label="Price" onChange={inputChanged} value={newCar.price}/>
+  <TextField name="year" label="Year" onChange={inputChanged} value={newCar.year}/>
+  <Button onClick={addCar} variant="contained" color="primary">Add</Button>
+  <hr></hr> -->
