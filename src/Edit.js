@@ -10,6 +10,7 @@ import { Redirect } from "react-router-dom";
 function Edit(props) {
 
   const [car, setCar] = useState({brand: '', model: '', color: '', fuel: '', price: 0, year: 0});
+ 
 
     React.useEffect(() => {
       fetch('http://carrestapi.herokuapp.com/cars/' + props.location.carId)

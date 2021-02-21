@@ -16,11 +16,13 @@ import { useRef } from 'react';
 import {Link} from "react-router-dom";
 
 
+
 function App() {
   const [cars, setCars] =  useState([]);
   const [links, setLinks] = useState();
   const [newCar, setNewCar] = useState({brand: '', model: '', color: '', fuel: '', price: 0, year: 0});
-  
+  const [sortedField, setSortedField] = React.useState();
+  const [direction, setDirection ] = React.useState();
   
 
   React.useEffect(() => {
@@ -31,7 +33,7 @@ function App() {
       setCars(responseData._embedded.cars)
       setLinks(responseData._links)
       
-      console.log(responseData._links)
+      console.log(cars)
     })
     .catch(err => console.error(err))
   }, [])
@@ -78,7 +80,35 @@ function App() {
       .then((data => console.log(data)));
   }
 
+  //Sort magic
+  //Dont execute the function if sortedField isn't modified
+  if(sortedField != null){
 
+    if (direction == 'asc'){
+      //Asc
+    cars.sort((a, b) => {
+      if (a[sortedField] < b[sortedField]) {
+        return -1;
+      }
+      if (a[sortedField] > b[sortedField]) {
+        return 1;
+      }
+      return 0;
+    });
+  } else {
+    // Desc
+    cars.sort((a, b) => {
+      if (a[sortedField] < b[sortedField]) {
+        return 1;
+      }
+      if (a[sortedField] > b[sortedField]) {
+        return -1;
+      }
+      return 0;
+    });
+  }
+
+  }
 
   
   return (
@@ -96,14 +126,29 @@ function App() {
       <Button onClick={addCar} variant="contained" color="primary">Add</Button>
       <hr></hr>
       </div>
+  
    
       <table>
           <thead>
               <tr>
-                <th>Car id (on the server)</th>
-                  <th>Brand</th>
-                  <th>Model</th>
-                  <th>Color</th>
+                <th>ID  </th>
+                  <th>
+                    Brand &nbsp;
+                    <button type="button" onClick={() => {setSortedField('brand'); setDirection('asc')}}>Asc</button>
+                    <button type="button" onClick={() => {setSortedField('brand'); setDirection('desc')}}>Desc</button>
+                  </th>
+
+                  <th>
+                    Model &nbsp; 
+                    <button type="button" onClick={() => {setSortedField('model'); setDirection('asc')}}>Asc</button>
+                    <button type="button" onClick={() => {setSortedField('model'); setDirection('desc')}}>Desc</button>
+                  </th>
+
+                  <th>
+                    Color &nbsp;
+                    <button type="button" onClick={() => {setSortedField('color'); setDirection('asc')}}>Asc</button>
+                    <button type="button" onClick={() => {setSortedField('color'); setDirection('desc')}}>Desc</button>
+                  </th>
                   <th>Fuel</th>
                   <th>Price</th>
                   <th>Year</th>
