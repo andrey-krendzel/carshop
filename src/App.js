@@ -14,6 +14,7 @@ import EditCellRenderer from './EditCellRenderer.jsx';
 import DeleteCellRenderer from './DeleteCellRenderer.jsx';
 import { useRef } from 'react';
 import {Link} from "react-router-dom";
+import { Minimize } from '@material-ui/icons';
 
 
 
@@ -22,7 +23,8 @@ function App() {
   const [links, setLinks] = useState();
   const [newCar, setNewCar] = useState({brand: '', model: '', color: '', fuel: '', price: 0, year: 0});
   const [sortedField, setSortedField] = React.useState();
-  const [direction, setDirection ] = React.useState();
+  const [direction, setDirection ] = React.useState()
+  const [filter, setFilter] = React.useState({brand: '', model: '', color:'', fuel: '', price: {min: 0, max: 1000000}, year:0})
   
 
   React.useEffect(() => {
@@ -56,6 +58,8 @@ function App() {
   const inputChanged = (event) =>{
     setNewCar({...newCar, [event.target.name]: event.target.value});
   }
+
+
 
   const addCar = (event) =>{
     event.preventDefault();
@@ -110,6 +114,41 @@ function App() {
 
   }
 
+  // FILTERRS
+
+  const brandFilterChanged = (event) => {
+    setFilter({...filter, brand: event.target.value})
+  }
+
+  const modelFilterChanged = (event) => {
+    setFilter({...filter, model: event.target.value})
+  }
+  const colorFilterChanged = (event) => {
+    setFilter({...filter, color: event.target.value})
+  }
+
+  const fuelFilterChanged = (event) => {
+    setFilter({...filter, fuel: event.target.value})
+  }
+
+  const minFilterChanged = (event) => {
+    setFilter({...filter, 
+      price: {
+      max: filter.price.max, 
+      min: event.target.value
+    }
+    })
+  }
+
+  const maxFilterChanged = (event) => {
+    setFilter({...filter, price: {min: filter.price.min, max: event.target.value}})
+  }
+  
+  const yearFilterChanged = (event) => {
+    setFilter({...filter, year: event.target.value})
+  }
+
+
   
   return (
     <div>
@@ -124,6 +163,20 @@ function App() {
       <TextField name="price" label="Price" onChange={inputChanged} value={newCar.price}/>
       <TextField name="year" label="Year" onChange={inputChanged} value={newCar.year}/>
       <Button onClick={addCar} variant="contained" color="primary">Add</Button>
+      <hr></hr>
+      <div className="filterCar">
+      <h1> Filter car </h1>
+      By brand: <input onChange={brandFilterChanged} value={filter.brand}></input> <br />
+      By model: <input onChange={modelFilterChanged} value={filter.model}></input> <br />
+      By color: <input onChange={colorFilterChanged} value={filter.color}></input> <br />
+      By fuel: <input onChange={fuelFilterChanged} value={filter.fuel}></input> <br />
+      By price range: Min <input  onChange={minFilterChanged} value={filter.price.min}></input> Max <input onChange={maxFilterChanged} value={filter.price.max}></input>  <br />
+      By year: <input onChange={yearFilterChanged} value={filter.year}></input> &nbsp; 
+      </div>
+      <hr></hr>
+      <div className="exportCar">
+      <h1> Export  </h1>
+      </div>
       <hr></hr>
       </div>
   
@@ -149,14 +202,33 @@ function App() {
                     <button type="button" onClick={() => {setSortedField('color'); setDirection('asc')}}>Asc</button>
                     <button type="button" onClick={() => {setSortedField('color'); setDirection('desc')}}>Desc</button>
                   </th>
-                  <th>Fuel</th>
-                  <th>Price</th>
-                  <th>Year</th>
+                  <th>
+                    Fuel &nbsp;
+                    <button type="button" onClick={() => {setSortedField('fuel'); setDirection('asc')}}>Asc</button>
+                    <button type="button" onClick={() => {setSortedField('fuel'); setDirection('desc')}}>Desc</button>
+                  </th>
+                  <th>
+                    Price &nbsp;
+                    <button type="button" onClick={() => {setSortedField('price'); setDirection('asc')}}>Asc</button>
+                    <button type="button" onClick={() => {setSortedField('price'); setDirection('desc')}}>Desc</button>
+                  </th>
+                  <th>
+                    Year &nbsp;
+                    <button type="button" onClick={() => {setSortedField('year'); setDirection('asc')}}>Asc</button>
+                    <button type="button" onClick={() => {setSortedField('year'); setDirection('desc')}}>Desc</button>
+                  </th>
                   <th></th>
                   <th></th>
               </tr>
               </thead>
-          {cars.map((car, index) =>  
+          {cars
+          .filter(car => car.brand.toLowerCase().includes(filter.brand.toLowerCase()))
+         .filter(car => car.model.toLowerCase().includes(filter.model.toLowerCase()))
+         .filter(car => car.color.toLowerCase().includes(filter.color.toLowerCase()))
+         .filter(car => car.fuel.toLowerCase().includes(filter.fuel.toLowerCase()))
+         .filter(car => car.price > filter.price.min && car.price < filter.price.max)
+          .filter(car => car.year.toString().toLowerCase().includes(filter.year.toString().toLowerCase()))
+          .map((car, index) =>  
         <tbody>
         <tr key={index}>
           <td>{car._links.self.href.split("/").[4]}</td>
