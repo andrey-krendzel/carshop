@@ -21,19 +21,41 @@ import Tab from'@material-ui/core/Tab';
 import AppBar from '@material-ui/core/AppBar';
 
 
-function AddCar(props){
+function FilterCar(props){
 
-    return(<div className="addCar">
-    <h1> Add new car </h1>
-  <TextField name="brand" label="Brand" onChange={props.inputChanged} value={props.newCar.brand}/>
-  <TextField name="model" label="Model" onChange={props.inputChanged} value={props.newCar.model}/>
-  <TextField name="color" label="Color" onChange={props.inputChanged} value={props.newCar.color}/>
-  <TextField name="fuel" label="Fuel" onChange={props.inputChanged} value={props.newCar.fuel}/>
-  <TextField name="price" label="Price" onChange={props.inputChanged} value={props.newCar.price}/>
-  <TextField name="year" label="Year" onChange={props.inputChanged} value={props.newCar.year}/>
-  <Button onClick={props.addCar} variant="contained" color="primary">Add</Button>
+   return(  <div className="filterCar">
+   <h1> Filter car </h1>
+   By brand: <input onChange={props.brandFilterChanged} value={props.filter.brand}></input> <br />
+   By model: <input onChange={props.modelFilterChanged} value={props.filter.model}></input> <br />
+   By color: <input onChange={props.colorFilterChanged} value={props.filter.color}></input> <br />
+   By fuel: <input onChange={props.fuelFilterChanged} value={props.filter.fuel}></input> <br />
+   By price range: Min <input  onChange={props.minFilterChanged} value={props.filter.price.min}></input> Max <input onChange={props.maxFilterChanged} value={props.filter.price.max}></input>  <br />
+   By year: <input onChange={props.yearFilterChanged} value={props.filter.year}></input> &nbsp; 
+   <hr></hr>
+   </div>)
+}
+
+function ExportCar(props){
+  return(<div className="exportCar">
+  <h1> Export  </h1>
+  <CSVLink data={props.data}>Export in .csv</CSVLink>
   <hr></hr>
   </div>)
+}
+
+function AddCar(props){
+
+  return(<div className="addCar">
+  <h1> Add new car </h1>
+<TextField name="brand" label="Brand" onChange={props.inputChanged} value={props.newCar.brand}/>
+<TextField name="model" label="Model" onChange={props.inputChanged} value={props.newCar.model}/>
+<TextField name="color" label="Color" onChange={props.inputChanged} value={props.newCar.color}/>
+<TextField name="fuel" label="Fuel" onChange={props.inputChanged} value={props.newCar.fuel}/>
+<TextField name="price" label="Price" onChange={props.inputChanged} value={props.newCar.price}/>
+<TextField name="year" label="Year" onChange={props.inputChanged} value={props.newCar.year}/>
+<Button onClick={props.addCar} variant="contained" color="primary">Add</Button>
+<hr></hr>
+</div>)
 }
 
 function App(props) {
@@ -182,38 +204,21 @@ function App(props) {
         <AppBar position="static">
         <Tabs value={tabValue} onChange={handleTabChange}>
             <Tab value="one" label="Add Car"/>
-            <Tab value="two" label="My Todos"/>
-           
+            <Tab value="two" label="Filter Car"/>
+            <Tab value="three" label="Export Car"/>
             </Tabs>
             </AppBar>
             {tabValue==='one' && <AddCar inputChanged={inputChanged} addCar={addCar} newCar={newCar} />}
-            {tabValue==='two' && <div></div>}
-            
-            </div>
-
-
-      <div className="filterCar">
-      <h1> Filter car </h1>
-      By brand: <input onChange={brandFilterChanged} value={filter.brand}></input> <br />
-      By model: <input onChange={modelFilterChanged} value={filter.model}></input> <br />
-      By color: <input onChange={colorFilterChanged} value={filter.color}></input> <br />
-      By fuel: <input onChange={fuelFilterChanged} value={filter.fuel}></input> <br />
-      By price range: Min <input  onChange={minFilterChanged} value={filter.price.min}></input> Max <input onChange={maxFilterChanged} value={filter.price.max}></input>  <br />
-      By year: <input onChange={yearFilterChanged} value={filter.year}></input> &nbsp; 
-      </div>
-      <hr></hr>
-      <div className="exportCar">
-      <h1> Export  </h1>
-      <CSVLink data={cars.filter(car => car.brand.toLowerCase().includes(filter.brand.toLowerCase()))
+            {tabValue==='two' && <FilterCar brandFilterChanged={brandFilterChanged} modelFilterChanged={modelFilterChanged} colorFilterChanged={colorFilterChanged} fuelFilterChanged={fuelFilterChanged} 
+          minFilterChanged={minFilterChanged} maxFilterChanged={maxFilterChanged} yearFilterChanged={yearFilterChanged} filter={filter}/>}
+            {tabValue==='three' &&  <ExportCar data={cars.filter(car => car.brand.toLowerCase().includes(filter.brand.toLowerCase()))
          .filter(car => car.model.toLowerCase().includes(filter.model.toLowerCase()))
          .filter(car => car.color.toLowerCase().includes(filter.color.toLowerCase()))
          .filter(car => car.fuel.toLowerCase().includes(filter.fuel.toLowerCase()))
          .filter(car => car.price > filter.price.min && car.price < filter.price.max)
-          .filter(car => car.year.toString().toLowerCase().includes(filter.year.toString().toLowerCase()))} >Download in .csv</CSVLink>
-      </div>
-      <hr></hr>
-     
-  
+          .filter(car => car.year.toString().toLowerCase().includes(filter.year.toString().toLowerCase()))} />
+}
+            </div>
    
       <table>
           <thead>
